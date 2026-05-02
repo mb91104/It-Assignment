@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPL 2026 - Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>IPL 2026 Season Tracker</h1>
+  </header>
+  
+  <nav id="main-nav">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="teams.html">Teams</a>
+    <a href="players.html">Players</a>
+    <a href="matches.html">Matches</a>
+    <a href="login.html" id="login-link">Login</a>
+    <a href="register.html" id="register-link">Register</a>
+  </nav>
+
+  <main>
+    <h2>IPL 2026 Overview</h2>
+    <div class="card">
+      <h3>Season Overview</h3>
+      <p>The 2026 Indian Premier League is in full swing! Stay updated with the latest team standings, player performances, and match schedules.</p>
+    </div>
+    
+    <div style="margin-top: 2rem;" class="grid-container">
+      <div class="card">
+        <h3>Top Team</h3>
+        <p id="top-team">Loading...</p>
+      </div>
+      <div class="card">
+        <h3>Orange Cap Leader</h3>
+        <p id="orange-cap">Loading...</p>
+      </div>
+      <div class="card">
+        <h3>Purple Cap Leader</h3>
+        <p id="purple-cap">Loading...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 IPL Stats Tracker. All rights reserved.</p>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script>
+    async function loadOverview() {
+      try {
+        const teamsRes = await fetchWithAuth('/api/teams');
+        if (teamsRes) {
+          const teamsData = await teamsRes.json();
+          if (teamsData && teamsData.length > 0) {
+            const top = teamsData.sort((a, b) => b.points - a.points)[0];
+            document.getElementById('top-team').innerText = `${top.name} (${top.points} pts)`;
+          } else {
+            document.getElementById('top-team').innerText = 'No data available';
+          }
+        }
+
+        const playersRes = await fetchWithAuth('/api/players');
+        if (playersRes) {
+          const playersData = await playersRes.json();
+          if (playersData && playersData.length > 0) {
+            const orangeLeader = [...playersData].sort((a, b) => b.runs - a.runs)[0];
+            document.getElementById('orange-cap').innerText = `${orangeLeader.name} - ${orangeLeader.runs} runs`;
+
+            const purpleLeader = [...playersData].sort((a, b) => b.wickets - a.wickets)[0];
+            document.getElementById('purple-cap').innerText = `${purpleLeader.name} - ${purpleLeader.wickets} wickets`;
+          } else {
+            document.getElementById('orange-cap').innerText = 'No data available';
+            document.getElementById('purple-cap').innerText = 'No data available';
+          }
+        }
+      } catch (err) {
+        console.error('Error loading overview:', err);
+      }
+    }
+    
+    // Check auth immediately
+    if (!getAuthToken()) {
+        window.location.href = 'login.html';
+    } else {
+        loadOverview();
+    }
+  </script>
+</body>
+</html>

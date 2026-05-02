@@ -3,41 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IPL 2026 - Home</title>
+  <title>IPL 2026 Season Tracker</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+      color: white;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .btn {
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background: #ffc107;
+      color: #1a237e;
+    }
+    .btn-secondary {
+      background: white;
+      color: #1a237e;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>IPL 2026 Season Tracker</h1>
   </header>
   
-  <nav>
+  <nav id="main-nav">
     <a href="index.html" class="active">Home</a>
-    <a href="teams.html">Teams</a>
-    <a href="players.html">Players</a>
-    <a href="matches.html">Matches</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="login.html" id="login-link">Login</a>
+    <a href="register.html" id="register-link">Register</a>
   </nav>
 
   <main>
-    <h2>Welcome to IPL 2026 Stats</h2>
-    <div class="card">
-      <h3>Season Overview</h3>
-      <p>The 2026 Indian Premier League is in full swing! Stay updated with the latest team standings, player performances, and match schedules.</p>
-      <p>Use the navigation menu above to explore different sections of the tournament.</p>
+    <div class="hero">
+      <h2>Your Ultimate IPL 2026 Companion</h2>
+      <p>Track teams, player stats, and live match results in one place.</p>
+      <div class="cta-buttons">
+        <a href="login.html" class="btn btn-primary">Get Started</a>
+        <a href="register.html" class="btn btn-secondary">Create Account</a>
+      </div>
     </div>
-    
-    <div style="margin-top: 2rem;" class="grid-container">
+
+    <div class="grid-container">
       <div class="card">
-        <h3>Top Team</h3>
-        <p id="top-team">Loading...</p>
+        <h3>Real-time Stats</h3>
+        <p>Get the latest updates on team points and net run rates.</p>
       </div>
       <div class="card">
-        <h3>Orange Cap Leader</h3>
-        <p id="orange-cap">Loading...</p>
+        <h3>Player Performance</h3>
+        <p>Track Orange and Purple Cap leaders throughout the season.</p>
       </div>
       <div class="card">
-        <h3>Purple Cap Leader</h3>
-        <p id="purple-cap">Loading...</p>
+        <h3>Match Schedule</h3>
+        <p>Never miss a game with our comprehensive match schedule.</p>
       </div>
     </div>
   </main>
@@ -46,46 +90,16 @@
     <p>&copy; 2026 IPL Stats Tracker. All rights reserved.</p>
   </footer>
 
+  <script src="js/auth.js"></script>
   <script>
-    if (window.location.protocol === 'file:') {
-      alert('Warning: You are opening this file directly. The data will not load because it requires a running backend server. Please visit http://localhost:3000 instead.');
-    } else {
-      // Simple overview fetch
-      fetch('/api/teams')
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            const top = data.sort((a, b) => b.points - a.points)[0];
-            document.getElementById('top-team').innerText = `${top.name} (${top.points} pts)`;
-          } else {
-            document.getElementById('top-team').innerText = 'No data available';
-          }
-        })
-        .catch(err => {
-          document.getElementById('top-team').innerText = 'Error loading data';
-        });
-
-      fetch('/api/players')
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            // Orange Cap Logic (Runs)
-            const orangeLeader = [...data].sort((a, b) => b.runs - a.runs)[0];
-            document.getElementById('orange-cap').innerText = `${orangeLeader.name} - ${orangeLeader.runs} runs`;
-
-            // Purple Cap Logic (Wickets)
-            const purpleLeader = [...data].sort((a, b) => b.wickets - a.wickets)[0];
-            document.getElementById('purple-cap').innerText = `${purpleLeader.name} - ${purpleLeader.wickets} wickets`;
-          } else {
-            document.getElementById('orange-cap').innerText = 'No data available';
-            document.getElementById('purple-cap').innerText = 'No data available';
-          }
-        })
-        .catch(err => {
-          document.getElementById('orange-cap').innerText = 'Error loading data';
-          document.getElementById('purple-cap').innerText = 'Error loading data';
-        });
-    }
+    // If user is already logged in, show a different CTA
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = getAuthToken();
+      if (token) {
+        const ctaButtons = document.querySelector('.cta-buttons');
+        ctaButtons.innerHTML = '<a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>';
+      }
+    });
   </script>
 </body>
 </html>
