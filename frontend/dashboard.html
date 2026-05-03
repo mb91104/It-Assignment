@@ -10,13 +10,15 @@
   <header>
     <div class="header-top">
       <h1>IPL 2026</h1>
-      <a href="#" id="logout-link" class="btn" style="color: var(--text-muted); font-size: 0.8rem; padding: 0;">Logout</a>
+      <div class="search-container">
+        <input type="text" id="global-search" placeholder="Search players or teams...">
+        <div id="search-results" class="search-results hidden"></div>
+      </div>
     </div>
     <nav id="main-nav">
       <a href="index.html">Home</a>
       <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="teams.html">Teams</a>
-      <a href="players.html">Players</a>
+      <a href="compare.html">Compare</a>
     </nav>
   </header>
 
@@ -24,7 +26,8 @@
     <!-- Dashboard Tabs -->
     <div class="dashboard-tabs">
       <button class="tab-btn active" id="btn-matches" onclick="switchTab('matches')">Matches</button>
-      <button class="tab-btn" id="btn-stats" onclick="switchTab('stats')">Stats</button>
+      <button class="tab-btn" id="btn-standings" onclick="switchTab('standings')">Standings</button>
+      <button class="tab-btn" id="btn-news" onclick="switchTab('news')">News</button>
       <button class="tab-btn" id="btn-build" onclick="switchTab('build')">Build Your 11</button>
     </div>
 
@@ -52,10 +55,52 @@
       </div>
     </section>
 
-    <!-- Stats Tab Content -->
-    <section id="tab-stats" class="tab-content hidden">
-      <div id="stats-content">
-        <p style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading stats...</p>
+    <!-- Standings Tab Content -->
+    <section id="tab-standings" class="tab-content hidden">
+      <div class="list-container" style="margin-bottom: 2rem;">
+        <div class="list-header">Points Table</div>
+        <div style="overflow-x: auto;">
+          <table id="teams-table-dashboard" class="stats-table">
+            <thead>
+              <tr>
+                <th>Pos</th>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>L</th>
+                <th>NRR</th>
+                <th>Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading standings...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div style="background: rgba(251, 191, 36, 0.05); padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 0.8rem; text-transform: uppercase; margin: 0; color: var(--accent-gold);">Orange Cap (Top 5)</h3>
+            <span style="font-size: 0.6rem; font-weight: 800; color: var(--accent-gold);">RUNS</span>
+          </div>
+          <div id="orange-cap-list" style="padding: 0.5rem 0;"></div>
+        </div>
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div style="background: rgba(168, 85, 247, 0.05); padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 0.8rem; text-transform: uppercase; margin: 0; color: #a855f7;">Purple Cap (Top 5)</h3>
+            <span style="font-size: 0.6rem; font-weight: 800; color: #a855f7;">WKTS</span>
+          </div>
+          <div id="purple-cap-list" style="padding: 0.5rem 0;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- News Tab Content -->
+    <section id="tab-news" class="tab-content hidden">
+      <div id="news-content" class="grid-container" style="grid-template-columns: 1fr;">
+        <p style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading news...</p>
       </div>
     </section>
 
@@ -123,7 +168,8 @@
       document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
-      if (tabId === 'stats') loadStats();
+      if (tabId === 'standings') loadStandings();
+      if (tabId === 'news') loadNews();
       if (tabId === 'matches') {
         hideMatchDetails();
         loadMatches();
@@ -281,18 +327,34 @@
           `).join('')}
         </div>
 
-        <div class="grid-container">
-          <div class="card">
-            <h3 style="font-size: 0.85rem; text-transform: uppercase; margin-bottom: 1rem;">Predicted XI: ${match.team1}</h3>
-            <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8;">
-              ${l1.map(p => `<li>${p.name} ${p.category === 'Overseas' ? '✈️' : ''}</li>`).join('')}
-            </ul>
+        <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-bottom: 1px solid var(--border-color);">
+              <h3 style="font-size: 0.8rem; text-transform: uppercase; margin: 0; color: var(--accent-blue);">Predicted XI: ${match.team1}</h3>
+            </div>
+            <div style="padding: 0.5rem 0;">
+              ${l1.map((p, i) => `
+                <div style="display: flex; align-items: center; padding: 0.6rem 1rem; ${i !== l1.length - 1 ? 'border-bottom: 1px solid rgba(255,255,255,0.02);' : ''}">
+                  <span style="width: 20px; font-size: 0.7rem; color: var(--text-muted);">${i + 1}</span>
+                  <span style="flex: 1; font-size: 0.85rem; font-weight: 600;">${p.name}</span>
+                  <span style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px;">${p.category === 'Overseas' ? '✈️ OS' : 'IND'}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
-          <div class="card">
-            <h3 style="font-size: 0.85rem; text-transform: uppercase; margin-bottom: 1rem;">Predicted XI: ${match.team2}</h3>
-            <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8;">
-              ${l2.map(p => `<li>${p.name} ${p.category === 'Overseas' ? '✈️' : ''}</li>`).join('')}
-            </ul>
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-bottom: 1px solid var(--border-color);">
+              <h3 style="font-size: 0.8rem; text-transform: uppercase; margin: 0; color: var(--accent-gold);">Predicted XI: ${match.team2}</h3>
+            </div>
+            <div style="padding: 0.5rem 0;">
+              ${l2.map((p, i) => `
+                <div style="display: flex; align-items: center; padding: 0.6rem 1rem; ${i !== l2.length - 1 ? 'border-bottom: 1px solid rgba(255,255,255,0.02);' : ''}">
+                  <span style="width: 20px; font-size: 0.7rem; color: var(--text-muted);">${i + 1}</span>
+                  <span style="flex: 1; font-size: 0.85rem; font-weight: 600;">${p.name}</span>
+                  <span style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px;">${p.category === 'Overseas' ? '✈️ OS' : 'IND'}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
         </div>
       `;
@@ -306,26 +368,185 @@
       document.getElementById('match-details-view').classList.add('hidden');
     }
 
-    async function loadStats() {
+    async function loadStandings() {
       try {
-        const [tr, pr] = await Promise.all([fetchWithAuth('/api/teams'), fetchWithAuth('/api/players')]);
-        const ts = await tr.json(), ps = await pr.json();
-        const o = ps.sort((a,b)=>b.runs-a.runs)[0], p = ps.sort((a,b)=>b.wickets-a.wickets)[0];
-        document.getElementById('stats-content').innerHTML = `
-          <div style="margin-bottom: 2rem;">
-            <h3 style="font-size: 0.8rem; margin-bottom: 1rem; color: var(--text-muted);">POINTS TABLE (TOP 5)</h3>
-            <table class="stats-table">
-              <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
-              <tbody>${ts.sort((a,b)=>b.points-a.points).slice(0,5).map((t,i)=>`
-                <tr><td>${i+1}</td><td><strong>${t.shortName}</strong></td><td>${t.played}</td><td>${t.won}</td><td>${t.lost}</td><td><strong>${t.points}</strong></td></tr>
-              `).join('')}</tbody>
-            </table>
+        const [tr, pr] = await Promise.all([
+          fetchWithAuth('/api/teams'),
+          fetchWithAuth('/api/players')
+        ]);
+        if (!tr || !pr) return;
+        
+        const teams = await tr.json();
+        const players = await pr.json();
+        
+        // Render Standings Table
+        const tableBody = document.querySelector('#teams-table-dashboard tbody');
+        const sortedTeams = teams.sort((a, b) => {
+          if (b.points !== a.points) return b.points - a.points;
+          return parseFloat(b.nrr) - parseFloat(a.nrr);
+        });
+
+        tableBody.innerHTML = sortedTeams.map((team, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 28px; height: 28px; background: transparent; overflow: hidden; flex-shrink: 0;">
+                  <img src="${team.logo}" alt="${team.shortName}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'">
+                </div>
+                <span><strong>${team.name}</strong> (${team.shortName})</span>
+              </div>
+            </td>
+            <td>${team.played}</td>
+            <td>${team.won}</td>
+            <td>${team.lost}</td>
+            <td>${team.nrr}</td>
+            <td><strong>${team.points}</strong></td>
+          </tr>
+        `).join('');
+
+        // Render Orange Cap (Top 5)
+        const orangeCapList = document.getElementById('orange-cap-list');
+        const topRuns = players.sort((a, b) => b.runs - a.runs).slice(0, 5);
+        orangeCapList.innerHTML = topRuns.map((p, i) => `
+          <div style="display: flex; align-items: center; padding: 0.6rem 1rem; ${i !== topRuns.length - 1 ? 'border-bottom: 1px solid rgba(255,255,255,0.02);' : ''}">
+            <span style="width: 25px; font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">${i + 1}</span>
+            <div style="flex: 1;">
+              <span style="font-weight: 700; font-size: 0.9rem; display: block;">${p.name}</span>
+              <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">${p.team}</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="color: var(--accent-gold); font-weight: 800; font-size: 1rem;">${p.runs}</span>
+            </div>
           </div>
-          <div class="grid-container">
-            <div class="card"><p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">Orange Cap</p><h3 style="margin: 0.25rem 0;">${o.name}</h3><p>${o.runs} Runs • ${o.team}</p></div>
-            <div class="card"><p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">Purple Cap</p><h3 style="margin: 0.25rem 0;">${p.name}</h3><p>${p.wickets} Wickets • ${p.team}</p></div>
+        `).join('');
+
+        // Render Purple Cap (Top 5)
+        const purpleCapList = document.getElementById('purple-cap-list');
+        const topWickets = players.sort((a, b) => b.wickets - a.wickets).slice(0, 5);
+        purpleCapList.innerHTML = topWickets.map((p, i) => `
+          <div style="display: flex; align-items: center; padding: 0.6rem 1rem; ${i !== topWickets.length - 1 ? 'border-bottom: 1px solid rgba(255,255,255,0.02);' : ''}">
+            <span style="width: 25px; font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">${i + 1}</span>
+            <div style="flex: 1;">
+              <span style="font-weight: 700; font-size: 0.9rem; display: block;">${p.name}</span>
+              <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">${p.team}</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="color: #a855f7; font-weight: 800; font-size: 1rem;">${p.wickets}</span>
+            </div>
           </div>
-        `;
+        `).join('');
+
+      } catch (err) { console.error(err); }
+    }
+
+    // SEARCH LOGIC
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+
+    searchInput.addEventListener('input', async (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      if (term.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+      }
+
+      const [tr, pr] = await Promise.all([fetchWithAuth('/api/teams'), fetchWithAuth('/api/players')]);
+      const teams = await tr.json(), players = await pr.json();
+
+      const matchedTeams = teams.filter(t => t.name.toLowerCase().includes(term) || t.shortName.toLowerCase().includes(term));
+      const matchedPlayers = players.filter(p => p.name.toLowerCase().includes(term));
+
+      if (matchedTeams.length === 0 && matchedPlayers.length === 0) {
+        searchResults.innerHTML = '<div class="search-item"><span class="sub">No results found</span></div>';
+      } else {
+        const teamHtml = matchedTeams.map(t => `
+          <div class="search-item" onclick="switchTab('standings')">
+            <div class="type-badge">Team</div>
+            <div>
+              <div class="name">${t.name}</div>
+              <div class="sub">${t.shortName} • ${t.points} Points</div>
+            </div>
+          </div>
+        `).join('');
+
+        const playerHtml = matchedPlayers.map(p => `
+          <div class="search-item" onclick="window.location.href='compare.html'">
+            <div class="type-badge" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue);">Player</div>
+            <div>
+              <div class="name">${p.name}</div>
+              <div class="sub">${p.team} • ${p.runs} Runs • ${p.wickets} Wkts</div>
+            </div>
+          </div>
+        `).join('');
+
+        searchResults.innerHTML = teamHtml + playerHtml;
+      }
+      searchResults.classList.remove('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    async function loadNews() {
+      try {
+        const res = await fetchWithAuth('/api/teams');
+        if (!res) return;
+        const teams = await res.json();
+        const sortedTeams = teams.sort((a, b) => {
+          if (b.points !== a.points) return b.points - a.points;
+          return parseFloat(b.nrr) - parseFloat(a.nrr);
+        });
+
+        const newsContent = document.getElementById('news-content');
+        const news = [];
+
+        // Top 3 Teams News
+        sortedTeams.slice(0, 3).forEach((team, i) => {
+          const titles = [
+            `${team.name} Dominates the Table as Playoffs Approach`,
+            `${team.shortName} Solidifies Top Spot with Consistent Performance`,
+            `Is anyone able to stop the ${team.name} Juggernaut?`
+          ];
+          news.push({
+            title: titles[i],
+            content: `The ${team.name} continue their impressive run, sitting comfortably at position #${i + 1} with ${team.points} points. Fans are optimistic about their chances in the upcoming playoffs.`,
+            tag: 'TOP TIER'
+          });
+        });
+
+        // Mid Table News
+        sortedTeams.slice(3, 7).forEach((team, i) => {
+          news.push({
+            title: `Crucial Matches Ahead for ${team.shortName}`,
+            content: `Currently at #${i + 4}, ${team.name} needs to find more consistency. Every match from here is like a final for them to secure a spot in the top four.`,
+            tag: 'MID TABLE'
+          });
+        });
+
+        // Bottom Teams News
+        sortedTeams.slice(7).forEach((team, i) => {
+          news.push({
+            title: `${team.shortName} Looking to Play Spoilsport`,
+            content: `Despite a tough season, ${team.name} is focusing on building for the future and could potentially derail the playoff hopes of other top-ranked teams.`,
+            tag: 'STRUGGLING'
+          });
+        });
+
+        newsContent.innerHTML = news.map(item => `
+          <div class="card" style="border-left: 4px solid var(--accent-blue);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.6rem; font-weight: 800; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 0.2rem 0.5rem; border-radius: 4px; text-transform: uppercase;">${item.tag}</span>
+              <span style="font-size: 0.65rem; color: var(--text-muted);">May 3, 2026</span>
+            </div>
+            <h3 style="margin-bottom: 0.75rem;">${item.title}</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">${item.content}</p>
+          </div>
+        `).join('');
+
       } catch (err) { console.error(err); }
     }
 
@@ -412,7 +633,6 @@
       return Math.min(Math.round((tot / 220) * 100), 100);
     }
 
-    document.getElementById('logout-link').addEventListener('click', (e) => { e.preventDefault(); logout(); });
     if (!getAuthToken()) { window.location.href = 'login.html'; } else { loadMatches(); }
   </script>
 </body>

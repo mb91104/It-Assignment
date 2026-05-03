@@ -55,7 +55,12 @@ function updateNav() {
         if (loginLink) loginLink.style.display = 'none';
         if (registerLink) registerLink.style.display = 'none';
         
-        if (!existingLogout) {
+        // Don't add logout button on the dashboard, index, or compare page as per user request
+        const isDashboard = window.location.pathname.includes('dashboard.html');
+        const isIndex = window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/');
+        const isCompare = window.location.pathname.includes('compare.html');
+        
+        if (!existingLogout && !isDashboard && !isIndex && !isCompare) {
             const logoutA = document.createElement('a');
             logoutA.id = 'logout-btn';
             logoutA.href = '#';
