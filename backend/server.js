@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { teams, players, matches } = require('./data');
+const { teams, players, matches, stockPlayers } = require('./data');
 const db = require('./db');
 const { authenticateToken, SECRET_KEY } = require('./auth');
 
@@ -87,7 +87,12 @@ app.get('/api/matches', authenticateToken, (req, res) => {
   res.json(matches);
 });
 
-console.log(`Loaded ${teams.length} teams, ${players.length} players, ${matches.length} matches.`);
+app.get('/api/stock-players', authenticateToken, (req, res) => {
+  console.log('Fetching stock players...');
+  res.json(stockPlayers);
+});
+
+console.log(`Loaded ${teams.length} teams, ${players.length} players, ${matches.length} matches, ${stockPlayers.length} stock players.`);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

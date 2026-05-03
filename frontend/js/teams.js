@@ -27,7 +27,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     tableBody.innerHTML = sortedTeams.map((team, index) => `
       <tr>
         <td>${index + 1}</td>
-        <td><strong>${team.name}</strong> (${team.shortName})</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 28px; height: 28px; background: transparent; overflow: hidden; flex-shrink: 0;">
+              <img src="${team.logo}" alt="${team.shortName}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'">
+            </div>
+            <span><strong>${team.name}</strong> (${team.shortName})</span>
+          </div>
+        </td>
         <td>${team.played}</td>
         <td>${team.won}</td>
         <td>${team.lost}</td>

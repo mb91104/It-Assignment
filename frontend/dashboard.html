@@ -8,40 +8,97 @@
 </head>
 <body>
   <header>
-    <h1>IPL 2026 Season Tracker</h1>
+    <div class="header-top">
+      <h1>IPL 2026</h1>
+      <a href="#" id="logout-link" class="btn" style="color: var(--text-muted); font-size: 0.8rem; padding: 0;">Logout</a>
+    </div>
+    <nav id="main-nav">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+    </nav>
   </header>
-  
-  <nav id="main-nav">
-    <a href="index.html">Home</a>
-    <a href="dashboard.html" class="active">Dashboard</a>
-    <a href="teams.html">Teams</a>
-    <a href="players.html">Players</a>
-    <a href="matches.html">Matches</a>
-    <a href="login.html" id="login-link">Login</a>
-    <a href="register.html" id="register-link">Register</a>
-  </nav>
 
   <main>
-    <h2>IPL 2026 Overview</h2>
-    <div class="card">
-      <h3>Season Overview</h3>
-      <p>The 2026 Indian Premier League is in full swing! Stay updated with the latest team standings, player performances, and match schedules.</p>
+    <!-- Dashboard Tabs -->
+    <div class="dashboard-tabs">
+      <button class="tab-btn active" id="btn-matches" onclick="switchTab('matches')">Matches</button>
+      <button class="tab-btn" id="btn-stats" onclick="switchTab('stats')">Stats</button>
+      <button class="tab-btn" id="btn-build" onclick="switchTab('build')">Build Your 11</button>
     </div>
-    
-    <div style="margin-top: 2rem;" class="grid-container">
-      <div class="card">
-        <h3>Top Team</h3>
-        <p id="top-team">Loading...</p>
+
+    <!-- Matches Tab Content -->
+    <section id="tab-matches" class="tab-content">
+      <div id="matches-list-view">
+        <div class="list-container">
+          <div class="list-header">
+            <div style="width: 24px; height: 24px; background: var(--accent-blue); border-radius: 4px;"></div>
+            Indian Premier League
+          </div>
+          <div id="matches-list">
+            <p style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading matches...</p>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Orange Cap Leader</h3>
-        <p id="orange-cap">Loading...</p>
+
+      <!-- Match Details View -->
+      <div id="match-details-view" class="hidden">
+        <button onclick="hideMatchDetails()" class="btn" style="color: var(--text-muted); margin-bottom: 1rem; padding: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Back to matches
+        </button>
+        <div id="match-info-content"></div>
       </div>
-      <div class="card">
-        <h3>Purple Cap Leader</h3>
-        <p id="purple-cap">Loading...</p>
+    </section>
+
+    <!-- Stats Tab Content -->
+    <section id="tab-stats" class="tab-content hidden">
+      <div id="stats-content">
+        <p style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading stats...</p>
       </div>
-    </div>
+    </section>
+
+    <!-- Build Tab Content -->
+    <section id="tab-build" class="tab-content hidden">
+      <div id="game-status-bar" style="position: sticky; top: 120px; z-index: 100; background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div class="status-item">
+          <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Budget</p>
+          <h3 id="game-budget">100</h3>
+        </div>
+        <div class="status-item">
+          <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Players</p>
+          <h3 id="game-player-count">0 / 11</h3>
+        </div>
+        <div class="status-item">
+          <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Overseas</p>
+          <h3 id="game-overseas-count">0 / 4</h3>
+        </div>
+        <div id="submit-section" class="hidden" style="display: flex; gap: 0.5rem;">
+          <button onclick="submitTeam()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Submit Team</button>
+          <button onclick="clearTeam()" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Clear</button>
+        </div>
+        <button id="btn-clear-main" onclick="clearTeam()" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Clear All</button>
+      </div>
+
+      <div id="team-summary" class="hidden" style="margin-bottom: 2rem; animation: slideDown 0.3s ease-out;">
+        <div class="card" style="border-color: var(--accent-blue); background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--text-primary);">YOUR DREAM 11</h3>
+            <div style="text-align: right;">
+              <p style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Team Strength</p>
+              <h2 id="team-strength-score" style="color: var(--accent-gold); font-size: 2rem; margin: 0;">0%</h2>
+            </div>
+          </div>
+          <div id="selected-team-display" class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;"></div>
+        </div>
+      </div>
+
+      <div class="list-container">
+        <div class="list-header">Available Players</div>
+        <div id="stock-players-list"></div>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -50,44 +107,313 @@
 
   <script src="js/auth.js"></script>
   <script>
-    async function loadOverview() {
-      try {
-        const teamsRes = await fetchWithAuth('/api/teams');
-        if (teamsRes) {
-          const teamsData = await teamsRes.json();
-          if (teamsData && teamsData.length > 0) {
-            const top = teamsData.sort((a, b) => b.points - a.points)[0];
-            document.getElementById('top-team').innerText = `${top.name} (${top.points} pts)`;
-          } else {
-            document.getElementById('top-team').innerText = 'No data available';
-          }
-        }
+    // GLOBAL DATA
+    window.allMatches = [];
+    window.allTeams = [];
+    window.allStockPlayers = [];
 
-        const playersRes = await fetchWithAuth('/api/players');
-        if (playersRes) {
-          const playersData = await playersRes.json();
-          if (playersData && playersData.length > 0) {
-            const orangeLeader = [...playersData].sort((a, b) => b.runs - a.runs)[0];
-            document.getElementById('orange-cap').innerText = `${orangeLeader.name} - ${orangeLeader.runs} runs`;
+    // GAME STATE
+    let selectedPlayers = [];
+    let budget = 100;
+    let overseasCount = 0;
 
-            const purpleLeader = [...playersData].sort((a, b) => b.wickets - a.wickets)[0];
-            document.getElementById('purple-cap').innerText = `${purpleLeader.name} - ${purpleLeader.wickets} wickets`;
-          } else {
-            document.getElementById('orange-cap').innerText = 'No data available';
-            document.getElementById('purple-cap').innerText = 'No data available';
-          }
-        }
-      } catch (err) {
-        console.error('Error loading overview:', err);
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`btn-${tabId}`).classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      if (tabId === 'stats') loadStats();
+      if (tabId === 'matches') {
+        hideMatchDetails();
+        loadMatches();
       }
+      if (tabId === 'build') loadGame();
     }
-    
-    // Check auth immediately
-    if (!getAuthToken()) {
-        window.location.href = 'login.html';
-    } else {
-        loadOverview();
+
+    async function loadMatches() {
+      try {
+        const [matchesRes, teamsRes] = await Promise.all([
+          fetchWithAuth('/api/matches'),
+          fetchWithAuth('/api/teams')
+        ]);
+        if (!matchesRes || !teamsRes) return;
+        
+        window.allMatches = await matchesRes.json();
+        window.allTeams = await teamsRes.json();
+        
+        const list = document.getElementById('matches-list');
+        const getLogo = (sn) => window.allTeams.find(t => t.shortName === sn)?.logo || '';
+        
+        list.innerHTML = window.allMatches.map(match => {
+          const isLive = match.id === 44;
+          const statusHtml = isLive 
+            ? `<div class="match-status live"><div class="pulse"></div>LIVE</div>` 
+            : `<div class="match-status">${match.date.split('-').slice(1).join('/') || 'TBD'}</div>`;
+          const score = match.result.includes('won') ? match.result.split(' won ')[0] : 'VS';
+
+          return `
+            <div class="match-row" onclick="showMatchDetails(${match.id})" style="cursor: pointer;">
+              ${statusHtml}
+              <div class="match-content">
+                <div class="team home">
+                  <span class="team-name">${match.team1}</span>
+                  <div class="team-logo"><img src="${getLogo(match.team1)}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'"></div>
+                </div>
+                <div class="score-box">${score}</div>
+                <div class="team away">
+                  <div class="team-logo"><img src="${getLogo(match.team2)}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'"></div>
+                  <span class="team-name">${match.team2}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) { console.error(err); }
     }
+
+    async function showMatchDetails(matchId) {
+      const match = window.allMatches.find(m => m.id === matchId);
+      if (!match) return;
+
+      const listView = document.getElementById('matches-list-view');
+      const detailsView = document.getElementById('match-details-view');
+      const content = document.getElementById('match-info-content');
+
+      if (window.allStockPlayers.length === 0) {
+        const res = await fetchWithAuth('/api/stock-players');
+        window.allStockPlayers = await res.json();
+      }
+
+      // Prediction
+      const sortedTeams = [...window.allTeams].sort((a, b) => b.points - a.points);
+      const r1 = sortedTeams.findIndex(t => t.shortName === match.team1) + 1;
+      const r2 = sortedTeams.findIndex(t => t.shortName === match.team2) + 1;
+      let prob1 = 50, prob2 = 50;
+      if (r1 > 0 && r2 > 0) {
+        const s1 = 11 - r1, s2 = 11 - r2;
+        prob1 = Math.round((s1 / (s1 + s2)) * 100);
+        prob2 = 100 - prob1;
+      }
+
+      // Lineups
+      const getLineupData = (tc) => {
+        const players = window.allStockPlayers.filter(p => p.team === tc);
+        return [...players.filter(p => p.category === 'Overseas').slice(0, 4), ...players.filter(p => p.category === 'Indian')].slice(0, 11);
+      };
+      const l1 = getLineupData(match.team1);
+      const l2 = getLineupData(match.team2);
+
+      // Key Players
+      const res = await fetchWithAuth('/api/players');
+      const leaders = await res.json();
+      const combined = [...l1, ...l2];
+      
+      const allInsights = [
+        "Major threat in the death overs",
+        "Crucial anchor for the middle order",
+        "Highly aggressive powerplay hitter",
+        "Precision bowler in crunch moments",
+        "Dynamic fielder and impact batter",
+        "Finding peak rhythm this season",
+        "Key tactical asset for the captain",
+        "Expect a match-winning spell today",
+        "A constant threat for any batter",
+        "Looking to dominate the spin overs"
+      ];
+      
+      // Shuffle insights for variety
+      const shuffledInsights = allInsights.sort(() => Math.random() - 0.5);
+      
+      const keyPlayers = combined
+        .map((p, idx) => {
+          const leader = leaders.find(l => l.name === p.name);
+          return {
+            ...p,
+            stat: leader ? (leader.runs > 0 ? `${leader.runs} Runs` : `${leader.wickets} Wickets`) : "Important Player",
+            insight: leader ? (leader.runs > 400 || leader.wickets > 15 ? "In phenomenal form" : "Top threat today") : shuffledInsights[idx % shuffledInsights.length]
+          };
+        })
+        .sort((a, b) => (a.stat.includes('Runs') || a.stat.includes('Wickets') ? -1 : 1))
+        .slice(0, 5);
+
+      content.innerHTML = `
+        <div class="card" style="margin-bottom: 2rem;">
+          <div style="text-align: center;">
+            <p style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; margin-bottom: 1rem;">${match.date} • ${match.venue}</p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 2rem;">
+              <div style="text-align: center; flex: 1;">
+                <img src="${window.allTeams.find(t => t.shortName === match.team1)?.logo}" style="width: 64px; height: 64px; object-fit: contain;">
+                <h2 style="margin-top: 0.5rem;">${match.team1}</h2>
+              </div>
+              <div class="score-box" style="font-size: 1.5rem; padding: 0.5rem 1rem;">${match.result.includes('Upcoming') ? 'VS' : match.result.split(' won ')[0]}</div>
+              <div style="text-align: center; flex: 1;">
+                <img src="${window.allTeams.find(t => t.shortName === match.team2)?.logo}" style="width: 64px; height: 64px; object-fit: contain;">
+                <h2 style="margin-top: 0.5rem;">${match.team2}</h2>
+              </div>
+            </div>
+            <p style="margin-top: 1.5rem; font-weight: 600; color: var(--accent-blue);">${match.result}</p>
+            <div style="margin-top: 2.5rem;">
+              <h3 style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;">Win Prediction</h3>
+              <div style="height: 10px; background: var(--bg-primary); border-radius: 5px; display: flex; overflow: hidden; border: 1px solid var(--border-color);">
+                <div style="width: ${prob1}%; background: var(--accent-blue);"></div>
+                <div style="width: ${prob2}%; background: var(--accent-gold);"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 800;">
+                <span>${match.team1} ${prob1}%</span>
+                <span>${prob2}% ${match.team2}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+          <h3 style="font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem;">Top 5 Players to Watch</h3>
+          ${keyPlayers.map(p => `
+            <div style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <div style="flex: 0 0 120px; color: var(--accent-blue); font-weight: 800; font-size: 0.8rem; border-right: 1px solid var(--border-color); margin-right: 1.5rem;">${p.stat}</div>
+              <div style="flex: 1; min-width: 0;">
+                <span style="font-weight: 700; display: block; font-size: 1.05rem;">${p.name}</span>
+                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">${p.team} • ${p.category}</span>
+              </div>
+              <div style="flex: 1.5; text-align: right; font-style: italic; color: var(--text-primary); font-size: 0.9rem; padding-left: 1.5rem;">"${p.insight}"</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="grid-container">
+          <div class="card">
+            <h3 style="font-size: 0.85rem; text-transform: uppercase; margin-bottom: 1rem;">Predicted XI: ${match.team1}</h3>
+            <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8;">
+              ${l1.map(p => `<li>${p.name} ${p.category === 'Overseas' ? '✈️' : ''}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="font-size: 0.85rem; text-transform: uppercase; margin-bottom: 1rem;">Predicted XI: ${match.team2}</h3>
+            <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8;">
+              ${l2.map(p => `<li>${p.name} ${p.category === 'Overseas' ? '✈️' : ''}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+      listView.classList.add('hidden');
+      detailsView.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function hideMatchDetails() {
+      document.getElementById('matches-list-view').classList.remove('hidden');
+      document.getElementById('match-details-view').classList.add('hidden');
+    }
+
+    async function loadStats() {
+      try {
+        const [tr, pr] = await Promise.all([fetchWithAuth('/api/teams'), fetchWithAuth('/api/players')]);
+        const ts = await tr.json(), ps = await pr.json();
+        const o = ps.sort((a,b)=>b.runs-a.runs)[0], p = ps.sort((a,b)=>b.wickets-a.wickets)[0];
+        document.getElementById('stats-content').innerHTML = `
+          <div style="margin-bottom: 2rem;">
+            <h3 style="font-size: 0.8rem; margin-bottom: 1rem; color: var(--text-muted);">POINTS TABLE (TOP 5)</h3>
+            <table class="stats-table">
+              <thead><tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
+              <tbody>${ts.sort((a,b)=>b.points-a.points).slice(0,5).map((t,i)=>`
+                <tr><td>${i+1}</td><td><strong>${t.shortName}</strong></td><td>${t.played}</td><td>${t.won}</td><td>${t.lost}</td><td><strong>${t.points}</strong></td></tr>
+              `).join('')}</tbody>
+            </table>
+          </div>
+          <div class="grid-container">
+            <div class="card"><p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">Orange Cap</p><h3 style="margin: 0.25rem 0;">${o.name}</h3><p>${o.runs} Runs • ${o.team}</p></div>
+            <div class="card"><p style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">Purple Cap</p><h3 style="margin: 0.25rem 0;">${p.name}</h3><p>${p.wickets} Wickets • ${p.team}</p></div>
+          </div>
+        `;
+      } catch (err) { console.error(err); }
+    }
+
+    async function loadGame() {
+      if (window.allStockPlayers.length === 0) {
+        const res = await fetchWithAuth('/api/stock-players');
+        window.allStockPlayers = await res.json();
+      }
+      renderGame();
+    }
+
+    function renderGame() {
+      const list = document.getElementById('stock-players-list');
+      list.innerHTML = window.allStockPlayers.map(p => {
+        const isSelected = selectedPlayers.find(sp => sp.id === p.id);
+        const canAdd = !isSelected && selectedPlayers.length < 11 && budget >= p.cost && (p.category !== 'Overseas' || overseasCount < 4);
+        return `
+          <div class="match-row" style="${isSelected ? 'background-color: rgba(59, 130, 246, 0.05);' : ''}">
+            <div class="match-status">${p.cost} PTS</div>
+            <div class="match-content">
+              <div class="team" style="justify-content: flex-start;">
+                <div class="team-logo" style="width: 24px; height: 24px; margin-right: 0.5rem; background: var(--border-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem;">${p.team}</div>
+                <span class="team-name">${p.name}</span>
+                <span style="font-size: 0.65rem; color: var(--text-muted); margin-left: 0.5rem;">${p.category}</span>
+              </div>
+              <button onclick="${isSelected ? 'removePlayer' : 'addPlayer'}(${p.id})" class="btn ${isSelected ? 'btn-secondary' : 'btn-primary'}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" ${!isSelected && !canAdd ? 'disabled' : ''}>${isSelected ? 'Remove' : 'Add'}</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      updateStatusUI();
+    }
+
+    function addPlayer(id) {
+      const p = window.allStockPlayers.find(x => x.id === id);
+      if (p) { selectedPlayers.push(p); budget -= p.cost; if (p.category === 'Overseas') overseasCount++; renderGame(); }
+    }
+    function removePlayer(id) {
+      const i = selectedPlayers.findIndex(x => x.id === id);
+      if (i !== -1) { const p = selectedPlayers[i]; budget += p.cost; if (p.category === 'Overseas') overseasCount--; selectedPlayers.splice(i, 1); renderGame(); }
+    }
+    function clearTeam() {
+      selectedPlayers = []; budget = 100; overseasCount = 0;
+      document.getElementById('team-summary').classList.add('hidden');
+      document.getElementById('stock-players-list').style.opacity = '1';
+      document.getElementById('stock-players-list').style.pointerEvents = 'all';
+      renderGame();
+    }
+    function updateStatusUI() {
+      document.getElementById('game-budget').innerText = budget;
+      document.getElementById('game-player-count').innerText = `${selectedPlayers.length} / 11`;
+      document.getElementById('game-overseas-count').innerText = `${overseasCount} / 4`;
+      const ss = document.getElementById('submit-section'), cm = document.getElementById('btn-clear-main');
+      if (selectedPlayers.length === 11) { ss.classList.remove('hidden'); cm.classList.add('hidden'); }
+      else { ss.classList.add('hidden'); cm.classList.remove('hidden'); }
+    }
+    async function submitTeam() {
+      const tr = await fetchWithAuth('/api/teams'), pr = await fetchWithAuth('/api/players');
+      const ts = await tr.json(), ps = await pr.json();
+      const score = calculateStrength(selectedPlayers, ts, ps);
+      document.getElementById('team-strength-score').innerText = `${score}%`;
+      document.getElementById('selected-team-display').innerHTML = selectedPlayers.map(p => `
+        <div class="card" style="padding: 0.75rem; border-color: rgba(255,255,255,0.05);">
+          <p style="font-size: 0.6rem; font-weight: 800; color: var(--text-muted); margin: 0;">${p.team}</p>
+          <h4 style="font-size: 0.85rem; margin: 0.25rem 0;">${p.name}</h4>
+          <span style="font-size: 0.6rem; background: var(--bg-primary); padding: 0.1rem 0.3rem; border-radius: 3px;">${p.category}</span>
+        </div>
+      `).join('');
+      document.getElementById('team-summary').classList.remove('hidden');
+      document.getElementById('team-summary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('stock-players-list').style.opacity = '0.5';
+      document.getElementById('stock-players-list').style.pointerEvents = 'none';
+      document.getElementById('submit-section').classList.add('hidden');
+      document.getElementById('btn-clear-main').classList.remove('hidden');
+    }
+    function calculateStrength(my, ts, ps) {
+      let tot = 0;
+      const sts = [...ts].sort((a,b)=>b.points-a.points);
+      const top = [...ps].sort((a,b)=>b.runs-a.runs).slice(0,5).concat([...ps].sort((a,b)=>b.wickets-a.wickets).slice(0,5));
+      my.forEach(p => {
+        tot += (11 - (sts.findIndex(t => t.shortName === p.team) + 1));
+        if (top.some(l => l.name === p.name)) tot += 10;
+      });
+      return Math.min(Math.round((tot / 220) * 100), 100);
+    }
+
+    document.getElementById('logout-link').addEventListener('click', (e) => { e.preventDefault(); logout(); });
+    if (!getAuthToken()) { window.location.href = 'login.html'; } else { loadMatches(); }
   </script>
 </body>
 </html>

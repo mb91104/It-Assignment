@@ -8,34 +8,38 @@
 </head>
 <body>
   <header>
-    <h1>IPL 2026 Season Tracker</h1>
+    <div class="header-top">
+      <h1>IPL 2026</h1>
+    </div>
+    <nav id="main-nav">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="register.html" class="active">Register</a>
+    </nav>
   </header>
-  
-  <nav id="main-nav">
-    <a href="login.html" id="login-link">Login</a>
-    <a href="register.html" class="active" id="register-link">Register</a>
-  </nav>
 
   <main>
-    <h2>Register</h2>
-    <div class="card" style="max-width: 400px; margin: 0 auto;">
+    <div class="card form-card">
+      <h2 style="margin-bottom: 1.5rem; text-align: center;">Join the Action</h2>
       <form id="register-form">
-        <div style="margin-bottom: 1rem;">
-          <label for="username" style="display: block; margin-bottom: 0.5rem;">Username:</label>
-          <input type="text" id="username" required style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" required placeholder="Choose a username">
         </div>
-        <div style="margin-bottom: 1rem;">
-          <label for="password" style="display: block; margin-bottom: 0.5rem;">Password:</label>
-          <input type="password" id="password" required style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Create a password">
         </div>
-        <div style="margin-bottom: 1rem;">
-          <label for="confirm-password" style="display: block; margin-bottom: 0.5rem;">Confirm Password:</label>
-          <input type="password" id="confirm-password" required style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" required placeholder="Confirm your password">
         </div>
-        <button type="submit" style="background: #1a237e; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Register</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
       </form>
-      <p id="error-msg" style="color: red; margin-top: 1rem;"></p>
-      <p style="margin-top: 1rem;">Already have an account? <a href="login.html">Login here</a></p>
+      <p id="error-msg" class="error-msg"></p>
+      <p style="margin-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        Already have an account? <a href="login.html" style="color: var(--accent-blue); text-decoration: none;">Login here</a>
+      </p>
     </div>
   </main>
 
